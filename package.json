@@ -1,0 +1,23 @@
+{
+  "name": "numbxpearl-api-v1",
+  "version": "1.0.0",
+  "description": "Node.js server with express and typescript",
+  "main": "server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.ts"
+  },
+  "author": "Brian Cabrera",
+  "license": "ISC",
+  "dependencies": {
+    "@decorators/express": "^2.9.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
