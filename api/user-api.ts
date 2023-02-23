@@ -11,7 +11,18 @@ import { makeResponse } from '../helpers/responseHelper';
 const userApi = express.Router();
 const service = new UserService();
 
-userApi.get('/', (req, res) => service.getUsers(req, res))
+userApi.get('/', superadminMiddleware, async (req, res) => {
+    try {
+        const users = await service.getUsers();
+        if (users) {
+            return makeResponse(res, 200, users, true, null)
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, err, false, ['Internal server error'])
+    }
+})
 
 userApi.get('/:document', async (req, res) => {   
     try {

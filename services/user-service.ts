@@ -8,12 +8,26 @@ export class UserService {
         // private user: User
     ) {}
 
-    public getUsers(req, res) {
-        return 1
-    }
+    public async getUsers() {
+        return new Promise ((resolve, reject) => {
+            const sqlText = `
+                SELECT *
+                FROM users
+                WHERE users.deleted_at IS NULL;
+            `;
 
-    public getUser(req, res) {
-        return 1
+            MySqlConnection
+                .getInstance()
+                .fetch(sqlText)
+                .then((data) => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    console.log(res)
+                    res && res.length ? resolve(res) : resolve(null);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
     }
 
     public async createUser(
@@ -42,6 +56,7 @@ export class UserService {
         })
     }
 
+    // TODO !!
     public updateUser(req, res) {
         return 1
     }
@@ -57,7 +72,7 @@ export class UserService {
                 FROM users, user_type
                 WHERE users.user_id = ${user_id} AND
                 users.user_type_id = user_type.user_type_id AND
-                users.deleted_at = NULL;
+                users.deleted_at IS NULL;
             `;
 
             MySqlConnection
