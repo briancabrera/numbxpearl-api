@@ -6,7 +6,7 @@ export class Collection {
     constructor (
         public collection_id: number,
         public collection_name: string,
-        public available: boolean,
+        public available: boolean = false,
         public company_id: string,
         private created_at: string,
         private updated_at: string,
