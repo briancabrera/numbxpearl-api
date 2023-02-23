@@ -37,7 +37,7 @@ class MySqlConnection {
                 }else{
                     connection.query(query, (error: MysqlError, response: any) => {
                         if(error){
-                            reject(null);
+                            reject(error);
                         }else{
                             resolve(response);
                         }

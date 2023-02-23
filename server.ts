@@ -13,16 +13,12 @@ import productApi from './api/product-api';
 import userApi from './api/user-api';
 
 const app = express();
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const PORT: number = 8080;
-
-app.listen(PORT, () => {
-    console.log(`Facts Events service listening at http://localhost:${PORT}`)
-    checkMysqlConnection();
-})
+const PORT: number = 3009;
 
 app.use('/category', categoryApi)
 app.use('/collection', collectionApi)
@@ -31,3 +27,8 @@ app.use('/coupon', couponApi)
 app.use('/order', orderApi)
 app.use('/product', productApi)
 app.use('/user', userApi)
+
+app.listen(PORT, () => {
+    console.log(`Facts Events service listening at http://localhost:${PORT}`)
+    checkMysqlConnection();
+})

@@ -17,7 +17,5 @@ export class User {
         private updated_at: string,
         private deleted_at: string,
     ) {}
-
-    
-
+       
 }

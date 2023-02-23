@@ -1,4 +1,5 @@
 import MySqlConnection from "../core/mysqlConnection"
+import express from 'express'
 import { User } from "../models/user"
 
 export class ProductService {
@@ -8,8 +9,8 @@ export class ProductService {
         // private user: User
     ) {}
 
-    public getProducts(req, res) {
-        return 1
+    public getProducts(req: express.Request, res: express.Response) {
+        res.status(200).send("get products")
     }
 
     public getProduct(req, res) {
