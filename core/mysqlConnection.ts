@@ -49,6 +49,27 @@ class MySqlConnection {
         })
     }
 
+    insert(query: string) {
+        return new Promise((resolve, reject) => {
+            this.pool.getConnection((error, connection) => {
+                if(error){
+                    reject(error);
+                    console.log(error);
+                }else{
+                    connection.query(query, (error: MysqlError, response: any) => {
+                        if(error){
+                            reject(error);
+                        }else{
+                            resolve(true);
+                        }
+
+                        connection.release();
+                    })
+                }
+            })
+        })
+    }
+
     checkConnection() {
         return new Promise((resolve, reject) => {
             this.pool.getConnection((error, connection) => {
