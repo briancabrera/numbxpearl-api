@@ -4,8 +4,6 @@ import { User } from "../models/user"
 export class UserService {
 
     constructor (
-        // private company_id: number,
-        // private user: User
     ) {}
 
     public async getUsers() {
@@ -91,9 +89,31 @@ export class UserService {
     public async getUserByDocument(document: string) {
         return new Promise ((resolve, reject) => {
             const sqlText = `
-                SELECT user_id, firstname, lastname, email, phone
+                SELECT user_id, firstname, lastname, email, phone, document
                 FROM users
                 WHERE users.document = '${document}' AND
+                users.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .fetch(sqlText)
+                .then((data) => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res[0]) : resolve(null);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
+    public async getUserById(user_id: number) {
+        return new Promise ((resolve, reject) => {
+            const sqlText = `
+                SELECT user_id, firstname, lastname, email, phone, document
+                FROM users
+                WHERE users.user_id = ${user_id} AND
                 users.deleted_at IS NULL;
             `;
 
