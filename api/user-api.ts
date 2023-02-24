@@ -4,6 +4,7 @@ import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { UserService } from '../services/user-service';
 
 import { newUserSchema, updateUserSchema, getUserByDocumentSchema } from '../validators/user/index';
+import { getAddressesSchema, updateAddressSchema, createAddressSchema, deleteAddressSchema } from '../validators/address';
 
 import { makeResponse } from '../helpers/responseHelper';
 
@@ -69,13 +70,83 @@ userApi.post("/", async (req, res) => {
 
 
 // TODO
-userApi.put("/:id", async (req, res) => {   
+// userApi.put("/:id", async (req, res) => {   
+//     try {
+//         const {error, value} = await updateUserSchema.validateAsync(req.body)
+    
+//         if (!error) {
+//             const updatedUser = await service.updateUser(req, res)
+//             return makeResponse(res, 200, updatedUser, true, null)
+//         } else {
+//             return makeResponse(res, 400, null, false, ['Bad request'])
+//         }
+//     } catch (err) {
+//         return makeResponse(res, 500, null, false, ['Internal server error'])
+//     }
+// })
+
+// userApi.delete("/:id", superadminMiddleware, async (req, res) => {   
+//     try {
+//         const {error, value} = await updateUserSchema.validateAsync(req.body)
+    
+//         if (!error) {
+//             const deletedUser = await service.deleteUser(req, res)
+//             if (deletedUser) {
+//                 return makeResponse(res, 200, null, true, null)
+//             } else {
+//                 return makeResponse(res, 409, null, false, ['Conflict'])
+//             }
+//         } else {
+//             return makeResponse(res, 400, null, false, ['Bad request'])
+//         }
+//     } catch (err) {
+//         return makeResponse(res, 500, null, false, ['Internal server error'])
+//     }
+// })
+
+userApi.get("/:user_id/address", async (req, res) => {
     try {
-        const {error, value} = await updateUserSchema.validateAsync(req.body)
+        const {error, value} = await getAddressesSchema.validateAsync(req.params)
+
+        if (!error) {
+            const { user_id } = req.params
+            const user = await service.getUserById(user_id);
+            if (user) {
+                const addresses = await service.getUserAddresses(user_id)
+                if (addresses) {
+                    return makeResponse(res, 200, addresses, true, null)
+                } else {
+                    return makeResponse(res, 404, null, false, ['No addresses found for the user'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch(err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+userApi.post("/:user_id/address", async (req, res) => {   
+    try {
+        const {error, value} = await createAddressSchema.validateAsync({...req.body, ...req.params})
     
         if (!error) {
-            const updatedUser = await service.updateUser(req, res)
-            return makeResponse(res, 200, updatedUser, true, null)
+            let { country_id, department_id, address } = req.body
+            let { user_id } = req.params
+            const user = await service.getUserById(user_id);
+            if (user) {
+                const success = await service.createUserAddress(country_id, department_id, address.toLowerCase().trim(), user_id)
+                if (success) {
+                    return makeResponse(res, 201, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
         } else {
             return makeResponse(res, 400, null, false, ['Bad request'])
         }
@@ -84,13 +155,49 @@ userApi.put("/:id", async (req, res) => {
     }
 })
 
-userApi.delete("/:id", superadminMiddleware, async (req, res) => {   
+userApi.put("/:user_id/address/:address_id", async (req, res) => {   
     try {
-        const {error, value} = await updateUserSchema.validateAsync(req.body)
+        const {error, value} = await updateAddressSchema.validateAsync({...req.body, ...req.params})
     
         if (!error) {
-            const deletedUser = await service.deleteUser(req, res)
-            return makeResponse(res, 201, null, true, null)
+            let { country_id, department_id, address } = req.body
+            let { user_id, address_id } = req.params
+            const user = await service.getUserById(user_id);
+            if (user) {
+                const success = await service.updateUserAddress(country_id, department_id, address.toLowerCase().trim(), user_id)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+userApi.delete("/:user_id/address/:address_id", async (req, res) => {   
+    try {
+        const {error, value} = await deleteAddressSchema.validateAsync(req.params)
+    
+        if (!error) {
+            let { user_id, address_id } = req.params
+            const user = await service.getUserById(user_id);
+            if (user) {
+                const success = await service.deleteUserAddress(address_id)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
         } else {
             return makeResponse(res, 400, null, false, ['Bad request'])
         }
