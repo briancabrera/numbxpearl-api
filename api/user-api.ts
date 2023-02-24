@@ -49,13 +49,12 @@ userApi.post("/", async (req, res) => {
         const {error, value} = await newUserSchema.validateAsync(req.body)
     
         if (!error) {
-            const { firstname, lastname, email, phone, document } = req.body
+            let { firstname, lastname, email, phone, document } = req.body
             const userExists = await service.getUserByDocument(document)
             if (!userExists) {
-                const success = await service.createUser(firstname, lastname, email, phone, document)
+                const success = await service.createUser(firstname.trim(), lastname.trim(), email.trim(), phone.trim(), document.trim())
                 if (success) {
-                    const user = await service.getUserByDocument(document)
-                    return makeResponse(res, 201, user, true, null)
+                    return makeResponse(res, 201, null, true, null)
                 } else {
                     return makeResponse(res, 400, null, false, ['Bad request'])
                 }
@@ -68,6 +67,8 @@ userApi.post("/", async (req, res) => {
     }
 })
 
+
+// TODO
 userApi.put("/:id", async (req, res) => {   
     try {
         const {error, value} = await updateUserSchema.validateAsync(req.body)
