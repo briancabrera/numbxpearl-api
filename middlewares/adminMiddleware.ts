@@ -6,10 +6,10 @@ import { UserService } from '../services/user-service';
 
 
 export async function adminMiddleware(request: express.Request, response: express.Response, next: express.NextFunction){
-    const userId = request.headers.user_id;
+    const { user_id } = request.headers;
 
     const service = new UserService();
-    const userRole = await service.getUserRole(userId);
+    const userRole = await service.getUserRole(user_id);
 
     if(userRole['user_type_name'] === Roles.ADMINISTRATOR || userRole['user_type_name'] === Roles.SUPERADMIN){
         next();

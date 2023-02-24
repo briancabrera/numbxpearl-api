@@ -11,4 +11,5 @@ export class Address {
         private updated_at: string,
         private deleted_at: string
     ) {}
+    
 }

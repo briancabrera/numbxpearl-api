@@ -44,7 +44,7 @@ export class UserService {
 
             MySqlConnection
                 .getInstance()
-                .insert(sqlText)
+                .runQuery(sqlText)
                 .then((success) => {
                     if (success) {
                         resolve(true);

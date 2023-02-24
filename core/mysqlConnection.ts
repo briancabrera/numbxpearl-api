@@ -7,7 +7,6 @@ class MySqlConnection {
     private pool: mysql.Pool
 
     private constructor() {
-        console.log(mySqlConfig)
         this.pool = mysql.createPool({
             host: mySqlConfig.HOST,
             user: mySqlConfig.USER,
@@ -49,7 +48,7 @@ class MySqlConnection {
         })
     }
 
-    insert(query: string) {
+    runQuery(query: string) {
         return new Promise((resolve, reject) => {
             this.pool.getConnection((error, connection) => {
                 if(error){
