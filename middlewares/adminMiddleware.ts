@@ -11,7 +11,7 @@ export async function adminMiddleware(request: express.Request, response: expres
     const service = new UserService();
     const userRole = await service.getUserRole(user_id);
 
-    if(userRole['user_type_name'] === Roles.ADMINISTRATOR || userRole['user_type_name'] === Roles.SUPERADMIN){
+    if(userRole && (userRole['user_type_name'] === Roles.ADMINISTRATOR || userRole['user_type_name'] === Roles.SUPERADMIN)){
         next();
     } else {
         return makeResponse(response, 403, null, false, ["Unauthorized"]);
