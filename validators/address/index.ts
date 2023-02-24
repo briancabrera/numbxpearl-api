@@ -1,9 +1,11 @@
 import { createAddressSchema } from "./create-address";
 import { updateAddressSchema } from "./update-address";
-import { getUserAddressSchema } from "./get-user-address";
+import { getAddressesSchema } from "./get-user-address";
+import { deleteAddressSchema } from "./delete-address";
 
 export {
     createAddressSchema,
     updateAddressSchema,
-    getUserAddressSchema
+    getAddressesSchema,
+    deleteAddressSchema
 }
