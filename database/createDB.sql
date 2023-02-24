@@ -115,13 +115,26 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS address (
 	address_id INT NOT NULL AUTO_INCREMENT UNIQUE,
-    country VARCHAR(2) NOT NULL,
-    department VARCHAR(2) NOT NULL,
+    country_id VARCHAR(2) NOT NULL,
+    department_id VARCHAR(2) NOT NULL,
     address VARCHAR(255) NOT NULL,
     user_id INT NOT NULL,
     created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME DEFAULT NULL,
     deleted_at DATETIME DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS country (
+	country_id INT NOT NULL AUTO_INCREMENT UNIQUE,
+    country_name VARCHAR(20) NOT NULL,
+    country_code VARCHAR(2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS department (
+	country_id INT NOT NULL,
+    department_id INT NOT NULL AUTO_INCREMENT,
+    department_name VARCHAR(32),
+    department_code CHAR(2)
 );
 
 INSERT INTO company (company_name) VALUES 
