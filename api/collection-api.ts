@@ -1,18 +1,100 @@
 import express from 'express';
+import { makeResponse } from '../helpers/responseHelper';
 import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { CollectionService } from '../services/collection-service';
+import { deleteCollectionSchema, getCollectionSchema, getCompanyCollectionsSchema, newCollectionSchema, updateCollectionSchema } from '../validators/collection';
 
 const collectionApi = express.Router();
 const service = new CollectionService();
 
-collectionApi.get('/', (req, res) => service.getCollections(req, res))
 
-collectionApi.get('/:id', (req, res) => service.getCollections(req, res))
+collectionApi.get('/:collection_id', async (req, res) => {   
+    try {
+        const {error, value} = await getCollectionSchema.validateAsync(req.params)
 
-collectionApi.post("/", superadminMiddleware, (req, res) => service.createCollection(req, res))
+        if (!error) {
+            const { collection_id } = req.params
+            const collection = await service.getCollection(collection_id)
+            if (collection) {
+                return makeResponse(res, 200, collection, true, null)
+            } else {
+                return makeResponse(res, 404, null, false, ['Collection not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, err, false, ['Internal server error'])
+    }
+})
 
-collectionApi.put("/:id", superadminMiddleware, (req, res) => service.updateCollection(req, res))
+collectionApi.post("/", superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await newCollectionSchema.validateAsync(req.body)
+    
+        if (!error) {
+            let { collection_name, available, company_id } = req.body
+            const success = await service.createCollection(collection_name.trim(), available, company_id)
+            if (success) {
+                return makeResponse(res, 201, null, true, null)
+            } else {
+                return makeResponse(res, 400, null, false, ['Bad request'])
+            }
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
 
-collectionApi.delete("/:id", superadminMiddleware, (req, res) => service.deleteCollection(req, res))
+collectionApi.put("/:collection_id", superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await updateCollectionSchema.validateAsync({...req.body, ...req.params})
+        if (!error) {
+            let { collection_name, available } = req.body
+            let { collection_id } = req.params
+            const collection = await service.getCollection(collection_id);
+            if (collection) {
+                const success = await service.updateCollection(collection_id, collection_name.trim(), available)
+                console.log("success", success)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+collectionApi.delete("/:collection_id", superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await deleteCollectionSchema.validateAsync(req.params)
+    
+        if (!error) {
+            let { collection_id } = req.params
+            const collection = await service.getCollection(collection_id)
+            if (collection) {
+                const success = await service.deleteCollection(collection_id)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
 
 export = collectionApi
