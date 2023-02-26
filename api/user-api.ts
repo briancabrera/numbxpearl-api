@@ -132,13 +132,13 @@ userApi.get("/:user_id/address", async (req, res) => {
 userApi.post("/:user_id/address", async (req, res) => {   
     try {
         const {error, value} = await createAddressSchema.validateAsync({...req.body, ...req.params})
-    
         if (!error) {
             let { country_id, department_id, address } = req.body
             let { user_id } = req.params
             const user = await service.getUserById(user_id);
             if (user) {
                 const success = await service.createUserAddress(country_id, department_id, address.toLowerCase().trim(), user_id)
+                console.log("success", success)
                 if (success) {
                     return makeResponse(res, 201, null, true, null)
                 } else {
@@ -164,7 +164,7 @@ userApi.put("/:user_id/address/:address_id", async (req, res) => {
             let { user_id, address_id } = req.params
             const user = await service.getUserById(user_id);
             if (user) {
-                const success = await service.updateUserAddress(country_id, department_id, address.toLowerCase().trim(), user_id)
+                const success = await service.updateUserAddress(address_id, country_id, department_id, address.toLowerCase().trim())
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

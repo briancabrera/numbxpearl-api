@@ -9,7 +9,7 @@ export function makeResponse(
         response.status(status).json({
             data: data,
             success: success,
-            erros: errors
+            errors: errors
         });
 
         response.end();

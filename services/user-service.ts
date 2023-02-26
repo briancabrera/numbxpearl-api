@@ -140,7 +140,7 @@ export class UserService {
                 FROM address, country, department
                 WHERE address.user_id = ${user_id} AND
                 country.country_id = address.country_id AND
-                department.department_id = address.address_id AND
+                department.department_id = address.department_id AND
                 address.deleted_at IS NULL;
             `;
 
@@ -165,7 +165,7 @@ export class UserService {
         return new Promise ((resolve, reject) => {
             let sqlText = `
                 INSERT INTO address(country_id, department_id, address, user_id)
-                VALUES (${country_id}, ${department_id}, '${address}', ${user_id});
+                VALUES (${country_id}, ${department_id}, "${address}", ${user_id});
             `;
 
             MySqlConnection
@@ -177,6 +177,7 @@ export class UserService {
                     }
                 })
                 .catch((error) => {
+                    console.log(error);
                     reject(error);
                 })
         })
@@ -191,7 +192,7 @@ export class UserService {
             let sqlText = `
                 UPDATE address
                 SET address.department_id = ${department_id},
-                address.address = '${address}',
+                address.address = "${address}",
                 address.updated_at = NOW()
                 WHERE address.address_id = ${address_id} AND
                 address.deleted_at IS NULL;
@@ -206,6 +207,7 @@ export class UserService {
                     }
                 })
                 .catch((error) => {
+                    console.log(error)
                     reject(error);
                 })
         })
