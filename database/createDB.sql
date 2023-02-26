@@ -131,8 +131,8 @@ CREATE TABLE IF NOT EXISTS country (
 );
 
 CREATE TABLE IF NOT EXISTS department (
+	department_id INT NOT NULL AUTO_INCREMENT UNIQUE,
 	country_id INT NOT NULL,
-    department_id INT NOT NULL AUTO_INCREMENT,
     department_name VARCHAR(32),
     department_code CHAR(2)
 );
@@ -149,3 +149,26 @@ INSERT INTO user_type (user_type_name) VALUES
 INSERT INTO users(user_type_id, firstname, lastname, email, phone, password, document) 
 VALUES (1, "Brian", "Cabrera", "briancabrera.dev@gmail", "092730202","contraseñafalsa123", "52505507");
 
+INSERT INTO country(country_name, country_code)
+VALUES ('Uruguay', 'UY');
+
+INSERT INTO department(country_id, department_name, department_code)
+VALUES (1, 'Artigas', 'AR'),
+(1, 'Canelones', 'CA'),
+(1, 'Cerro Largo', 'CL'),
+(1, 'Colonia', 'CO'),
+(1, 'Durazno', 'DU'),
+(1, 'Flores', 'FS'),
+(1, 'Florida', 'FD'),
+(1, 'Lavalleja', 'LA'),
+(1, 'Maldonado', 'MA'),
+(1, 'Montevideo', 'MO'),
+(1, 'Paysandú', 'PA'),
+(1, 'Río Negro', 'RN'),
+(1, 'Rivera', 'RV'),
+(1, 'Rocha', 'RO'),
+(1, 'Salto', 'SA'),
+(1, 'San José', 'SJ'),
+(1, 'Soriano', 'SO'),
+(1, 'Tacuarembó', 'TA'),
+(1, 'Treinta y Tres', 'TT');
