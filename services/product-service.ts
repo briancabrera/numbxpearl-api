@@ -135,7 +135,7 @@ export class ProductService {
                 product.company_id = ${company_id}
                 product.collection_id = ${collection_id}
                 product.category_id = ${category_id}
-                collection.updated_at = NOW()
+                product.updated_at = NOW()
                 WHERE product = ${product_id} AND
                 product.deleted_at IS NULL;
             `;
