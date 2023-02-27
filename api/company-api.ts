@@ -3,7 +3,9 @@ import { makeResponse } from '../helpers/responseHelper';
 import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { CollectionService } from '../services/collection-service';
 import { CompanyService } from '../services/company-service';
+import { ProductService } from '../services/product-service';
 import { getCompanyCollectionsSchema } from '../validators/collection';
+import { getCompanyProductsSchema } from '../validators/product';
 
 const companyApi = express.Router();
 
@@ -16,6 +18,27 @@ companyApi.post("/", superadminMiddleware, (req, res) => res.status(503).send())
 companyApi.put("/:id", superadminMiddleware, (req, res) => res.status(503).send())
 
 companyApi.delete("/:id", superadminMiddleware, (req, res) => res.status(503).send())
+
+companyApi.get('/:company_id/products', async (req, res) => {
+    try {
+        const {error, value} = await getCompanyProductsSchema.validateAsync(req.params)
+        const service = new ProductService();
+        
+        if (!error) {
+            const { company_id } = req.params
+            const products = await service.getCompanyProducts(company_id)
+            if (products) {
+                return makeResponse(res, 200, products, true, null)
+            } else {
+                return makeResponse(res, 404, null, false, ['No products found for the company'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch(err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
 
 companyApi.get('/:company_id/collections', async (req, res) => {
     try {
