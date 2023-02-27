@@ -15,7 +15,5 @@ export const updateDiscountCouponSchema = Joi.object({
         .max(10),
     is_active: Joi.number()
         .integer()
-        .required(),
-    uses: Joi.number()
-        .integer()
+        .required()
 })
