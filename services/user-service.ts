@@ -37,7 +37,7 @@ export class UserService {
         return new Promise ((resolve, reject) => {
             let sqlText = `
                 INSERT INTO users(firstname, lastname, email, phone, document)
-                VALUES ('${firstname}', '${lastname}', '${email}', '${phone}', '${document}');
+                VALUES ("${firstname}", "${lastname}", "${email}", "${phone}", "${document}");
             `;
 
             MySqlConnection
