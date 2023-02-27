@@ -62,30 +62,6 @@ export class CollectionService {
         })
     }
 
-    private async getCollectionProducts(
-        collection_id: number
-    ) {
-        return new Promise((resolve, reject) => {
-            let sqlText = `
-                SELECT product.product_id, product.name, product.price, product.company_id, product.collection_id, category_id 
-                FROM product, collection
-                WHERE product.collection_id = ${collection_id} AND
-                product.deleted_at IS NULL;
-            `;
-
-            MySqlConnection
-                .getInstance()
-                .fetch(sqlText)
-                .then((data) => {
-                    let res = JSON.parse(JSON.stringify(data))
-                    res && res.length ? resolve(res) : resolve(null);
-                })
-                .catch((error) => {
-                    reject(error);
-                })
-        })
-    }
-
     public async createCollection(
         collection_name: string,
         available: number,
