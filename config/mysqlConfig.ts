@@ -1,6 +1,8 @@
+require('dotenv').config()
+
 export const mySqlConfig = {
-    HOST: "localhost",
-    USER: "root",
-    PASSWORD: "root123",
-    DATABASE: "numbxpearl"
+    HOST: process.env.MYSQL_HOST,
+    USER: process.env.MYSQL_USER,
+    PASSWORD: process.env.MYSQL_PASSWORD,
+    DATABASE: process.env.MYSQL_DATABASE
 };
