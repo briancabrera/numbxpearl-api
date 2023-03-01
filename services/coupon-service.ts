@@ -13,7 +13,7 @@ export class CouponService {
     ) {
         return new Promise((resolve, reject) => {
             let sqlText = `
-                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage
+                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage,
                 discount_coupon.valid_until, discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
                 FROM discount_coupon
                 WHERE discount_coupon.company_id = ${company_id} AND
@@ -28,6 +28,7 @@ export class CouponService {
                     res && res.length ? resolve(res) : resolve(null);
                 })
                 .catch((error) => {
+                    console.log(error)
                     reject(error);
                 })
         })
