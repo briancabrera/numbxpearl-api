@@ -17,11 +17,16 @@ collectionApi.get('/:collection_id/products', async (req, res) => {
 
         if (!error) {
             const { collection_id } = req.params
-            const products = await productService.getCollectionProducts(collection_id)
-            if (products) {
-                return makeResponse(res, 200, products, true, null)
+            const collection = await service.getCollection(collection_id)
+            if (collection) {
+                const products = await productService.getCollectionProducts(collection_id)
+                if (products) {
+                    return makeResponse(res, 200, products, true, null)
+                } else {
+                    return makeResponse(res, 404, null, false, ['No products found in the collection'])
+                }
             } else {
-                return makeResponse(res, 404, null, false, ['No products found in the collection'])
+                return makeResponse(res, 404, null, false, ['Collection not found'])
             }
         } else {
             return makeResponse(res, 400, null, false, ['Bad request'])

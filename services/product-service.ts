@@ -44,8 +44,8 @@ export class ProductService {
     ) {
         return new Promise((resolve, reject) => {
             let sqlText = `
-                SELECT product.product_id, product.name, product.price, product.company_id, product.collection_id, category_id 
-                FROM product, collection
+                SELECT product.product_id, product.name, product.price, product.company_id, product.collection_id, product.category_id 
+                FROM product
                 WHERE product.collection_id = ${collection_id} AND
                 product.deleted_at IS NULL;
             `;
@@ -97,7 +97,7 @@ export class ProductService {
         category_id: number) {
         return new Promise ((resolve, reject) => {
             let sqlText = `
-                INSERT INTO products(name, price, description, available, company_id, collection_id, category_id)
+                INSERT INTO product(name, price, description, available, company_id, collection_id, category_id)
                 VALUES ("${name}", ${price}, "${description}", ${available}, ${company_id}, ${collection_id}, ${category_id});
             `;
 
@@ -128,15 +128,15 @@ export class ProductService {
         return new Promise ((resolve, reject) => {
             let sqlText = `
                 UPDATE product
-                SET product.name = "${name}"
-                product.price = ${price}
-                product.description = "${description}"
-                product.available = ${available}
-                product.company_id = ${company_id}
-                product.collection_id = ${collection_id}
-                product.category_id = ${category_id}
+                SET product.name = "${name}",
+                product.price = ${price},
+                product.description = "${description}",
+                product.available = ${available},
+                product.company_id = ${company_id},
+                product.collection_id = ${collection_id},
+                product.category_id = ${category_id},
                 product.updated_at = NOW()
-                WHERE product = ${product_id} AND
+                WHERE product.product_id = ${product_id} AND
                 product.deleted_at IS NULL;
             `;
 
@@ -162,7 +162,7 @@ export class ProductService {
                 UPDATE product
                 SET product.deleted_at = NOW()
                 WHERE product.product_id = ${product_id} AND
-                product.deleted_at IS NULL
+                product.deleted_at IS NULL;
             `;
 
             MySqlConnection
