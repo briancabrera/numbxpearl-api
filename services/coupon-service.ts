@@ -14,7 +14,7 @@ export class CouponService {
         return new Promise((resolve, reject) => {
             let sqlText = `
                 SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage,
-                discount_coupon.valid_until, discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
+                discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
                 FROM discount_coupon
                 WHERE discount_coupon.company_id = ${company_id} AND
                 discount_coupon.deleted_at IS NULL;
@@ -39,8 +39,8 @@ export class CouponService {
     ) {
         return new Promise((resolve, reject) => {
             let sqlText = `
-                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage
-                discount_coupon.valid_until, discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
+                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage,
+                discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
                 FROM discount_coupon
                 WHERE discount_coupon.coupon_code = "${coupon_code}" AND
                 discount_coupon.deleted_at IS NULL;
@@ -54,7 +54,8 @@ export class CouponService {
                     res && res.length ? resolve(res[0]) : resolve(null);
                 })
                 .catch((error) => {
-                    reject(error);
+                    console.log(error)
+                    reject(null);
                 })
         })
     }
@@ -64,8 +65,8 @@ export class CouponService {
     ) {
         return new Promise((resolve, reject) => {
             let sqlText = `
-                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage
-                discount_coupon.valid_until, discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
+                SELECT discount_coupon.coupon_id, discount_coupon.coupon_code, discount_coupon.percentage,
+                discount_coupon.is_active, discount_coupon.uses, discount_coupon.company_id
                 FROM discount_coupon
                 WHERE discount_coupon.coupon_id = ${coupon_id} AND
                 discount_coupon.deleted_at IS NULL;
@@ -88,12 +89,11 @@ export class CouponService {
         company_id: number = 0,
         coupon_code: string,
         percentage: number,
-        valid_until: string,
         is_active: number) {
         return new Promise ((resolve, reject) => {
             let sqlText = `
-                INSERT INTO discount_coupon(coupon_code, percentage, valid_until, is_active)
-                VALUES ("${coupon_code}", ${percentage}, DATE(${valid_until}), ${is_active}, 0);
+                INSERT INTO discount_coupon(coupon_code, percentage, is_active, company_id, uses)
+                VALUES ("${coupon_code}", ${percentage}, ${is_active}, ${company_id}, 0);
             `;
 
             MySqlConnection
@@ -115,15 +115,13 @@ export class CouponService {
         coupon_id: number,
         coupon_code: string,
         percentage: number,
-        valid_until: string,
         is_active: number) {
         return new Promise ((resolve, reject) => {
             let sqlText = `
                 UPDATE discount_coupon
-                SET discount_coupon.coupon_code = "${coupon_code}"
-                discount_coupon.percentage = ${percentage}
-                discount_coupon.valid_until = DATE(${valid_until})
-                discount_coupon.is_active = ${is_active}
+                SET discount_coupon.coupon_code = "${coupon_code}",
+                discount_coupon.percentage = ${percentage},
+                discount_coupon.is_active = ${is_active},
                 discount_coupon.updated_at = NOW()
                 WHERE discount_coupon.coupon_id = ${coupon_id} AND
                 discount_coupon.deleted_at IS NULL;

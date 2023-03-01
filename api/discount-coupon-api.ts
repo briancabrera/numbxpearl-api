@@ -36,15 +36,13 @@ couponApi.get('/:coupon_code', superadminMiddleware, async (req, res) => {
 couponApi.post("/", superadminMiddleware, async (req, res) => {   
     try {
         const {error, value} = await newCouponSchema.validateAsync(req.body)
-    
         if (!error) {
             let { 
                 company_id,
                 coupon_code,
                 percentage,
-                valid_until,
                 is_active } = req.body
-            const success = await service.createDiscountCoupon(company_id, coupon_code.trim(), percentage, valid_until.trim(), is_active)
+            const success = await service.createDiscountCoupon(company_id, coupon_code.trim(), percentage, is_active)
             if (success) {
                 return makeResponse(res, 201, null, true, null)
             } else {
@@ -52,6 +50,7 @@ couponApi.post("/", superadminMiddleware, async (req, res) => {
             }
         }
     } catch (err) {
+        console.log(err)
         return makeResponse(res, 500, null, false, ['Internal server error'])
     }
 })
@@ -63,12 +62,12 @@ couponApi.put("/:coupon_id", superadminMiddleware, async (req, res) => {
             let { 
                 coupon_code,
                 percentage,
-                valid_until,
                 is_active } = req.body
             let { coupon_id } = req.params
             const coupon = await service.getDiscountCouponById(coupon_id);
+            console.log(coupon)
             if (coupon) {
-                const success = await service.updateDiscountProduct(coupon_id, coupon_code.trim(), percentage, valid_until.trim(), is_active)
+                const success = await service.updateDiscountProduct(coupon_id, coupon_code.trim(), percentage, is_active)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {
@@ -81,6 +80,7 @@ couponApi.put("/:coupon_id", superadminMiddleware, async (req, res) => {
             return makeResponse(res, 400, null, false, ['Bad request'])
         }
     } catch (err) {
+        console.log(err)
         return makeResponse(res, 500, null, false, ['Internal server error'])
     }
 })

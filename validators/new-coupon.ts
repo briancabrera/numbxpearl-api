@@ -1,6 +1,9 @@
 import Joi from "joi"
 
 export const newCouponSchema = Joi.object({
+    company_id: Joi.number()
+        .integer()
+        .required(),
     coupon_code: Joi.string()
         .alphanum()
         .max(20)
@@ -8,12 +11,7 @@ export const newCouponSchema = Joi.object({
     percentage: Joi.number()
         .integer()
         .required(),
-    valid_until: Joi.string()
-        .alphanum()
-        .max(10)
-        .min(10),
-    is_active: Joi.boolean(),
-    uses: Joi.number()
+    is_active: Joi.number()
         .integer()
         .required()
 })
