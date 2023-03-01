@@ -10,7 +10,7 @@ const collectionApi = express.Router();
 const service = new CollectionService();
 
 
-collectionApi.get('/:collection_id', async (req, res) => {   
+collectionApi.get('/:collection_id/products', async (req, res) => {   
     try {
         const {error, value} = await getCollectionProductsSchema.validateAsync(req.params)
         const productService = new ProductService();
@@ -21,7 +21,7 @@ collectionApi.get('/:collection_id', async (req, res) => {
             if (products) {
                 return makeResponse(res, 200, products, true, null)
             } else {
-                return makeResponse(res, 404, null, false, ['Collection not found'])
+                return makeResponse(res, 404, null, false, ['No products found in the collection'])
             }
         } else {
             return makeResponse(res, 400, null, false, ['Bad request'])
@@ -31,7 +31,7 @@ collectionApi.get('/:collection_id', async (req, res) => {
     }
 })
 
-collectionApi.get('/:collection_id/products', async (req, res) => {   
+collectionApi.get('/:collection_id', async (req, res) => {   
     try {
         const {error, value} = await getCollectionSchema.validateAsync(req.params)
 
@@ -78,7 +78,6 @@ collectionApi.put("/:collection_id", superadminMiddleware, async (req, res) => {
             const collection = await service.getCollection(collection_id);
             if (collection) {
                 const success = await service.updateCollection(collection_id, collection_name.trim(), available)
-                console.log("success", success)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

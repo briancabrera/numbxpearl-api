@@ -42,7 +42,7 @@ export class CollectionService {
             let sqlText = `
                 SELECT collection.collection_id, collection.collection_name, collection.available
                 FROM collection
-                WHERE collection.company_id = ${collection_id} AND
+                WHERE collection.collection_id = ${collection_id} AND
                 collection.deleted_at IS NULL;
             `;
 
@@ -94,8 +94,8 @@ export class CollectionService {
         return new Promise ((resolve, reject) => {
             let sqlText = `
                 UPDATE collection
-                SET collection.collection_name = "${collection_name}"
-                collection.available = ${available}
+                SET collection.collection_name = '${collection_name}',
+                collection.available = ${available},
                 collection.updated_at = NOW()
                 WHERE collection.collection_id = ${collection_id} AND
                 collection.deleted_at IS NULL
