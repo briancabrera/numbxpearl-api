@@ -31,7 +31,7 @@ export class OrderService {
     ) {
         try {
             let user = await this.userService.getUserByDocument(payer['document'])
-            console.log("user:", user)
+            
             if (!user) {
                 let success = await this.userService.createUser(
                     payer.name.trim(),

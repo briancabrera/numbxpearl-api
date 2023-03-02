@@ -33,6 +33,17 @@ export const newOrderSchema = Joi.object({
         document: Joi.string()
             .min(8)
             .max(8)
-            .required()
+            .required(),
+        address: {
+            country_id: Joi.number()
+                .integer()
+                .required(),
+            department_id: Joi.number()
+                .integer()
+                .required(),
+            address: Joi.string()
+                .max(255)
+                .required(),
+        }
     }).required()
 })
