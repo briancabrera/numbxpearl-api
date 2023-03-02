@@ -4,7 +4,7 @@ import { makeResponse } from '../helpers/responseHelper';
 import { adminMiddleware } from '../middlewares/adminMiddleware';
 import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { ProductService } from '../services/product-service';
-import { deleteProductSchema, getProductSchema, newProductSchema, updateProductSchema } from '../validators/product';
+import { deleteProductSchema, getProductSchema, newProductSchema, updateProductSchema, newProductVariantsSchema } from '../validators/product';
 
 const productApi = express.Router();
 const service = new ProductService();
@@ -51,6 +51,28 @@ productApi.post("/", superadminMiddleware, async (req, res) => {
             }
         }
     } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+productApi.post("/:product_id/variants", superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await newProductVariantsSchema.validateAsync({...req.body, ...req.params})
+    
+        if (!error) {
+            let { 
+                colors,
+                sizes } = req.body
+            let { product_id } = req.params
+            const success = await service.createProductVariants(product_id, colors, sizes)
+            if (success) {
+                return makeResponse(res, 201, null, true, null)
+            } else {
+                return makeResponse(res, 400, null, false, ['Bad request'])
+            }
+        }
+    } catch (err) {
+        console.log(err)
         return makeResponse(res, 500, null, false, ['Internal server error'])
     }
 })
