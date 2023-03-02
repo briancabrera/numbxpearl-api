@@ -30,9 +30,8 @@ export class OrderService {
         coupon_id: number = null
     ) {
         try {
-            let user = await this.userService.getUserByDocument(payer['document'])
             
-            if (!user) {
+            if (!payer.user_id) {
                 let success = await this.userService.createUser(
                     payer.name.trim(),
                     payer.lastname.trim(),
@@ -40,11 +39,16 @@ export class OrderService {
                     payer.phone.trim(),
                     payer.document.trim())
                 if (success) {
-                    user = await this.userService.getUserByDocument(payer['document'])
-                    await this.userService.createUserAddress(1, payer.address.department_id, payer.address.address, user['user_id'])
+                    let user = await this.userService.getUserByDocument(payer['document'])
+                    payer.user_id = user['user_id']
                 }
             }
-            payer.user_id = user['user_id']
+
+            if (!payer.address.address_id) {
+                await this.userService.createUserAddress(1, payer.address.department_id, payer.address.address, payer.user_id)
+                let address = await this.userService.getUserAddressId(payer.user_id, 1, payer.address.department_id, payer.address.address)
+                payer.address.address_id = address['address_id']
+            }
 
             let preferenceProducts = []
             for (let i = 0; i < products.length; i++) {
@@ -55,27 +59,8 @@ export class OrderService {
             const preference = await this.mpService.createPreference(preferenceProducts, payer, company_id, coupon_id)
 
             if (preference) {
-                return preference
-                // return new Promise((resolve, reject) => {
-                //     const sqlText = `
-                //         INSERT INTO purchase_order(status, mp_reference, user_id, company_id, coupon_id)
-                //         VALUES ("pending", "${preferenceData.external_reference}", ${payer.user_id}, 2, NULL)
-                //     `;
-    
-                //     MySqlConnection
-                //         .getInstance()
-                //         .runQuery(sqlText)
-                //         .then((success) => {
-                //             if (success) {
-                //                 resolve(preference);
-                //             }
-                //         })
-                //         .catch((error) => {
-                //             console.log(error);
-                //             reject(error);
-                //     })
-                // })
-                }
+                return preference    
+            }
         } catch (err) {
             console.log(err)
             return null
