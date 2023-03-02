@@ -41,16 +41,18 @@ export class OrderService {
                     payer.document.trim())
                 if (success) {
                     user = await this.userService.getUserByDocument(payer['document'])
-                    payer.user_id = user['user_id']
-                    await this.userService.createUserAddress(1, payer.address.department_id, payer.address.address, payer.user_id)
+                    await this.userService.createUserAddress(1, payer.address.department_id, payer.address.address, user['user_id'])
                 }
-        } else {
-            products = products.forEach(async (product) => {
-                product = await this.productService.getVariantWithProduct(product.product_id, product.color, product.size)
-                return product
-            })
+            }
+            payer.user_id = user['user_id']
 
-            const preference = await this.mpService.createPreference(products, payer, company_id, coupon_id)
+            let preferenceProducts = []
+            for (let i = 0; i < products.length; i++) {
+                let product = await this.productService.getVariantWithProduct(products[i].product_id, products[i].color, products[i].size)
+                preferenceProducts.push(product)
+            }
+
+            const preference = await this.mpService.createPreference(preferenceProducts, payer, company_id, coupon_id)
 
             if (preference) {
                 return preference
@@ -74,7 +76,6 @@ export class OrderService {
                 //     })
                 // })
                 }
-            }
         } catch (err) {
             console.log(err)
             return null

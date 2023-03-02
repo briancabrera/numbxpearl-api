@@ -1,12 +1,12 @@
 import mercadopago from "mercadopago";
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { MercadoPago } from "mercadopago/interface";
 import { mercadoPagoConfig } from "../config/mpConfig"; 
 import MySqlConnection from "../core/mysqlConnection";
 
 export class MpService {
-    private mp: MercadoPago = mercadopago
+    private mp = mercadopago
 
     constructor() {
         this.mp.configure(mercadoPagoConfig)
@@ -19,7 +19,7 @@ export class MpService {
         coupon_id: number = null
     ) {
         try {
-            const items = products.forEach(product => {
+            const items = products.map(product => {
                 let item = {
                     id: product.variant_id,
                     title: product.name,
@@ -36,10 +36,6 @@ export class MpService {
                 name: payer.firstname,
                 surname: payer.lastname,
                 email: payer.email,
-                phone: {
-                    area_code: '+598',
-                    number: payer.phone
-                },
                 identification: {
                     type: 'CI',
                     number: payer.document
@@ -54,7 +50,7 @@ export class MpService {
                     failure: "http://www.mercadolibre.com.uy/",
                     pending: ""         
                 },
-                external_reference: uuid.v4(),
+                external_reference: uuidv4(),
                 statement_descriptor: "NUMBxPEARL PURCHASE",
                 binary_mode: true,
                 metadata: {
