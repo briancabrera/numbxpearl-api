@@ -18,6 +18,8 @@ export const newOrderSchema = Joi.object({
                 .required()
         })),
     payer: Joi.object({
+        user_id: Joi.number()
+            .integer(),
         name: Joi.string()
             .max(12)
             .required(),
@@ -35,6 +37,8 @@ export const newOrderSchema = Joi.object({
             .max(8)
             .required(),
         address: {
+            address_id: Joi.number()
+                .integer(),
             country_id: Joi.number()
                 .integer()
                 .required(),
