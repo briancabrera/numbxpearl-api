@@ -157,6 +157,36 @@ export class UserService {
         })
     }
 
+    public async getUserAddressId(
+        country_id: number,
+        department_id: number,
+        address: string,
+        user_id: number
+    ) {
+        return new Promise((resolve, reject) => {
+            let sqlText = `
+                SELECT address.address_id
+                FROM address
+                WHERE address.user_id = ${user_id} AND
+                address.country_id = ${country_id} AND
+                address.department_id = ${department_id} AND
+                address.address = "${address}"
+                address.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .fetch(sqlText)
+                .then((data) => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res[0]) : resolve(null);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
     public async createUserAddress(
         country_id: number,
         department_id: number,
