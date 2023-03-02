@@ -64,6 +64,7 @@ userApi.post("/", async (req, res) => {
             }
         }
     } catch (err) {
+        console.log(err)
         return makeResponse(res, 500, null, false, ['Internal server error'])
     }
 })
