@@ -4,6 +4,7 @@ import { getCompanyProductsSchema } from "./get-company-products";
 import { getProductSchema } from "./get-product";
 import { newProductSchema } from "./new-product";
 import { updateProductSchema } from "./update-product";
+import { newProductVariantsSchema } from "./create-product-variants";
 
 export {
     deleteProductSchema,
@@ -11,5 +12,6 @@ export {
     getCompanyProductsSchema,
     getProductSchema,
     newProductSchema,
-    updateProductSchema
+    updateProductSchema,
+    newProductVariantsSchema
 }
