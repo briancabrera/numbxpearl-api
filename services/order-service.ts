@@ -84,7 +84,7 @@ export class OrderService {
             if (preference) {
                 let sqlText = `
                     INSERT INTO purchase_order(status, mp_reference, amount, user_id, company_id, coupon_id)
-                    VALUES ("${preference.body.status}", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
+                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
                 `
                 let orderCreated = await MySqlConnection
                     .getInstance()
