@@ -67,11 +67,12 @@ CREATE TABLE IF NOT EXISTS product_variant (
 CREATE TABLE IF NOT EXISTS purchase_order (
 	order_id INT NOT NULL AUTO_INCREMENT UNIQUE,
     status VARCHAR(9) NOT NULL,
-    mp_reference VARCHAR(64) DEFAULT NULL,
-    payment_method VARCHAR(10) NOT NULL,
+    mp_reference VARCHAR(64) NOT NULL,
+    preference_id VARCHAR(64) NOT NULL,
+    amount INT NOT NULL,
     user_id INT NOT NULL,
     company_id INT NOT NULL,
-    coupon_id INT NOT NULL,
+    coupon_id INT DEFAULT NULL,
     created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME DEFAULT NULL,
     deleted_at DATETIME DEFAULT NULL
