@@ -46,7 +46,7 @@ export class OrderService {
 
             if (!payer.address.address_id) {
                 await this.userService.createUserAddress(1, payer.address.department_id, payer.address.address, payer.user_id)
-                let address = await this.userService.getUserAddressId(payer.user_id, 1, payer.address.department_id, payer.address.address)
+                let address = await this.userService.getUserAddressId(1, payer.address.department_id, payer.address.address, payer.user_id)
                 payer.address.address_id = address['address_id']
             }
 
