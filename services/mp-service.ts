@@ -76,4 +76,12 @@ export class MpService {
             return null
         }
     }
+
+    public async findPreference(
+        mp_reference: string
+    ) {
+        const paymentData = await this.mp.preferences.findById(mp_reference)
+        console.log(paymentData)
+        return true
+    }
 }

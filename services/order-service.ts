@@ -83,8 +83,8 @@ export class OrderService {
 
             if (preference) {
                 let sqlText = `
-                    INSERT INTO purchase_order(status, mp_reference, amount, user_id, company_id, coupon_id)
-                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
+                    INSERT INTO purchase_order(status, mp_reference, preference_id, amount, user_id, company_id, coupon_id)
+                    VALUES ("created", "${preference.body.external_reference}", "${preference.body.id}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
                 `
                 let orderCreated = await MySqlConnection
                     .getInstance()
@@ -106,7 +106,7 @@ export class OrderService {
                         }
                     }
 
-                    return preference.body.sandbox_init_point
+                    return preference
                 }
             }
         } catch (err) {
