@@ -53,6 +53,13 @@ export class MpService {
                 external_reference: uuidv4(),
                 statement_descriptor: "NUMBxPEARL PURCHASE",
                 binary_mode: true,
+                payment_methods: {
+                    excluded_payment_types: [
+                        {
+                            id: "ticket"
+                        }
+                    ]
+                },
                 metadata: {
                     company_id: company_id,
                     coupon_id: coupon_id
