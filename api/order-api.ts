@@ -8,7 +8,7 @@ const service = new OrderService();
 
 orderApi.get('/', (req, res) => service.getOrders(req, res))
 
-orderApi.get('/:id', (req, res) => service.getOrder(req, res))
+// orderApi.get('/:id', (req, res) => service.getOrder(req, res))
 
 orderApi.post("/", async (req, res) => {   
     try {
@@ -32,7 +32,19 @@ orderApi.post("/", async (req, res) => {
     }
 })
 
-orderApi.put("/:id", (req, res) => service.updateOrder(req, res))
+orderApi.post("/mercadopago", async (req, res) => {
+    let status = 200;
+
+    switch(req.body.action) {
+        case 'payment.created':
+            let success = await service.updateOrderStatus(Number(req.body.data.id))
+            if (!success) {
+                status = 400
+            }
+    }
+
+    res.status(status).send()
+})
 
 orderApi.delete("/:id", (req, res) => service.deleteOrder(req, res))
 
