@@ -83,8 +83,8 @@ export class OrderService {
 
             if (preference) {
                 let sqlText = `
-                    INSERT INTO purchase_order(status, mp_reference, preference_id, amount, user_id, company_id, coupon_id)
-                    VALUES ("created", "${preference.body.external_reference}", "${preference.body.id}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
+                    INSERT INTO purchase_order(status, mp_reference, amount, user_id, company_id, coupon_id)
+                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
                 `
                 let orderCreated = await MySqlConnection
                     .getInstance()
@@ -112,6 +112,36 @@ export class OrderService {
         } catch (err) {
             console.log(err)
             return null
+        }
+    }
+
+    public async updateOrderStatus(
+        payment_id: number
+    ) {
+        try {
+            let paymentData = await this.mpService.findPayment(payment_id)
+
+            if (paymentData) {
+                let sqlText = `
+                    UPDATE purchase_order
+                    SET purchase_order.status = "${paymentData['status']}",
+                    purchase_order.payment_id = "${payment_id}"
+                    WHERE purchase_order.mp_reference = "${paymentData['external_reference']}"
+                `
+
+                let success = await MySqlConnection
+                    .getInstance()
+                    .runQuery(sqlText)
+
+                if (success) {
+                    return true
+                } 
+
+                return false
+            }
+        } catch (err) {
+            console.log(err)
+            return false
         }
     }
 

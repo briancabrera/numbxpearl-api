@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
 	order_id INT NOT NULL AUTO_INCREMENT UNIQUE,
     status VARCHAR(9) NOT NULL,
     mp_reference VARCHAR(64) NOT NULL,
-    preference_id VARCHAR(64) NOT NULL,
+    payment_id VARCHAR(64) DEFAULT NULL,
     amount INT NOT NULL,
     user_id INT NOT NULL,
     company_id INT NOT NULL,

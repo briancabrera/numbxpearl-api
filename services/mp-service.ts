@@ -63,7 +63,8 @@ export class MpService {
                 metadata: {
                     company_id: company_id,
                     coupon_id: coupon_id
-                }
+                },
+                notification_url: "https://f1fa-2800-a4-22c0-d600-984c-e057-d3f9-c27c.sa.ngrok.io/order/mercadopago"
             }
     
             const preference = await this.mp.preferences.create(preferenceData)
@@ -77,11 +78,15 @@ export class MpService {
         }
     }
 
-    public async findPreference(
-        mp_reference: string
+    public async findPayment(
+        payment_id: number
     ) {
-        const paymentData = await this.mp.preferences.findById(mp_reference)
-        console.log(paymentData)
-        return true
+        const paymentData = await this.mp.payment.findById(payment_id)
+
+        if (paymentData) {
+            return paymentData.body
+        } else {
+            return false
+        }
     }
 }
