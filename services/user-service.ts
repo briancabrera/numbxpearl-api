@@ -170,7 +170,7 @@ export class UserService {
                 WHERE address.user_id = ${user_id} AND
                 address.country_id = ${country_id} AND
                 address.department_id = ${department_id} AND
-                address.address = "${address}"
+                address.address = "${address}" AND
                 address.deleted_at IS NULL;
             `;
 
