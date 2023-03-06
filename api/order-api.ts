@@ -2,12 +2,12 @@ import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
 import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { OrderService } from '../services/order-service';
-import { orderIdValidator, newOrderSchema } from '../validators/order';
+import { orderIdValidator, newOrderSchema, updateShipmentStatusSchema } from '../validators/order';
 
 const orderApi = express.Router();
 const service = new OrderService();
 
-orderApi.get('/:id', superadminMiddleware, async (req, res) => {   
+orderApi.get('/:order_id', superadminMiddleware, async (req, res) => {   
     try {
         const {error, value} = await orderIdValidator.validateAsync(req.params)
 
@@ -63,6 +63,54 @@ orderApi.post("/mercadopago", async (req, res) => {
     res.status(status).send()
 })
 
-orderApi.delete("/:id", (req, res) => service.deleteOrder(req, res))
+orderApi.put('/:order_id', superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await updateShipmentStatusSchema.validateAsync({...req.body, ...req.params})
+        if (!error) {
+            let { shipment_status } = req.body
+            let { order_id } = req.params
+            const order = await service.getOrder(order_id);
+            if (order) {
+                const success = await service.updateOrderShipmentStatus(order_id, shipment_status)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+orderApi.delete("/:order_id", superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await orderIdValidator.validateAsync(req.params)
+    
+        if (!error) {
+            let { order_id } = req.params
+            const order = await service.getOrder(order_id)
+            if (order) {
+                const success = await service.deleteOrder(order_id)
+                if (success) {
+                    return makeResponse(res, 200, null, true, null)
+                } else {
+                    return makeResponse(res, 409, null, false, ['Conflict'])
+                }
+            } else {
+                return makeResponse(res, 404, null, false, ['User not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
 
 export = orderApi
