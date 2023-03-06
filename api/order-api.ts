@@ -1,14 +1,31 @@
 import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
+import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { OrderService } from '../services/order-service';
-import { newOrderSchema } from '../validators/order/new-order';
+import { orderIdValidator, newOrderSchema } from '../validators/order';
 
 const orderApi = express.Router();
 const service = new OrderService();
 
-orderApi.get('/', (req, res) => service.getOrders(req, res))
+orderApi.get('/:id', superadminMiddleware, async (req, res) => {   
+    try {
+        const {error, value} = await orderIdValidator.validateAsync(req.params)
 
-// orderApi.get('/:id', (req, res) => service.getOrder(req, res))
+        if (!error) {
+            const { order_id } = req.params
+            const order = await service.getOrderDetail(order_id)
+            if (order) {
+                return makeResponse(res, 200, order, true, null)
+            } else {
+                return makeResponse(res, 404, null, false, ['Order not found'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, err, false, ['Internal server error'])
+    }
+})
 
 orderApi.post("/", async (req, res) => {   
     try {
