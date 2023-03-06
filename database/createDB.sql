@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS discount_coupon (
 	valid_until DATE,
 	is_active INT NOT NULL CHECK (is_active BETWEEN 0 AND 1),
     uses INT NOT NULL,
+    company_id INT NOT NULL,
 	created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME DEFAULT NULL,
     deleted_at DATETIME DEFAULT NULL
