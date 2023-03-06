@@ -16,9 +16,5 @@ export const updateUserSchema = Joi.object({
     password: Joi.string()
         .alphanum()
         .max(32)
-        .min(8),
-    document: Joi.string()
-        .max(8)
-        .alphanum()
-        .required()
+        .min(8)
 })
