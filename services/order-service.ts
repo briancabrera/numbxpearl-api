@@ -56,6 +56,31 @@ export class OrderService {
         })
     }
 
+    public async getOrder(
+        order_id: number
+    ) {
+        return new Promise((resolve, reject) => {
+            let sqlText = `
+                SELECT purchase_order.order_id
+                FROM purchase_order
+                WHERE purchase_order.order_id = ${order_id} AND
+                purchase_order.deleted_at IS NULL
+            `
+
+            MySqlConnection.getInstance()
+                .fetch(sqlText)
+                .then(data => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res) : reject(null)
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+
+        })
+    }
+
     public async getOrderDetail(
         order_id: number
     ) {
