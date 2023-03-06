@@ -53,7 +53,6 @@ export class OrderService {
                     console.log(err)
                     reject(err)
                 })
-
         })
     }
 
@@ -254,8 +253,31 @@ export class OrderService {
         }
     }
 
-    public updateOrder(req, res) {
-        return 1
+    public async updateOrderShipmentStatus(
+        order_id: number,
+        shipment_status: string
+    ) {
+        return new Promise ((resolve, reject) => {
+            let sqlText = `
+                UPDATE purchase_order
+                SET purchase_order.shipment_status = '${shipment_status}',
+                purchase_order.updated_at = NOW()
+                WHERE purchase_order.order_id = ${order_id} AND
+                purchase_order.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .runQuery(sqlText)
+                .then((success) => {
+                    if (success) {
+                        resolve(true);
+                    }
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
     }
 
     public deleteOrder(req, res) {
