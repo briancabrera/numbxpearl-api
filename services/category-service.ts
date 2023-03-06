@@ -7,7 +7,7 @@ export class CategoryService {
     public async getCategories() {
         return new Promise ((resolve, reject) => {
             const sqlText = `
-                SELECT *
+                SELECT category.category_id, category.category_name
                 FROM category
                 WHERE category.deleted_at IS NULL;
             `;
@@ -29,10 +29,10 @@ export class CategoryService {
     public async getCategoryById(category_id: number) {
         return new Promise ((resolve, reject) => {
             const sqlText = `
-                SELECT *
+                SELECT category.category_id, category.category_name
                 FROM category
                 WHERE category.category_id = ${category_id} AND 
-                category.deleted_at IS NULL;
+                category.deleted_at IS NULL
             `;
 
             MySqlConnection
