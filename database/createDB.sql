@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     mp_reference VARCHAR(64) NOT NULL,
     payment_id VARCHAR(64) DEFAULT NULL,
     amount INT NOT NULL,
+    shipment_status VARCHAR(7) NOT NULL,
     user_id INT NOT NULL,
     address_id INT NOT NULL,
     company_id INT NOT NULL,
