@@ -280,7 +280,28 @@ export class OrderService {
         })
     }
 
-    public deleteOrder(req, res) {
-        return 1
+    public deleteOrder(
+        order_id: number
+    ) {
+        return new Promise ((resolve, reject) => {
+            let sqlText = `
+                UPDATE purchase_order
+                SET purchase_order.deleted_at = NOW()
+                WHERE purchase_order.order_id = ${order_id} AND
+                purchase_order.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .runQuery(sqlText)
+                .then((success) => {
+                    if (success) {
+                        resolve(true);
+                    }
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
     }
 }
