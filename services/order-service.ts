@@ -19,7 +19,42 @@ export class OrderService {
         company_id: number,
         status: string
     ) {
-        
+        return new Promise((resolve, reject) => {
+            let sqlText;
+
+            if (status) {
+                sqlText = `
+                    SELECT purchase_order.order_id, purchase_order.status,
+                    purchase_order.amount, purchase_order.company_id,
+                    purchase_order.coupon_id
+                    FROM purchase_order
+                    WHERE purchase_order.company_id = ${company_id} AND
+                    purchase_order.status = "${status}" AND
+                    purchase_order.deleted_at IS NULL
+                `
+            } else {
+                sqlText = `
+                    SELECT purchase_order.order_id, purchase_order.status,
+                    purchase_order.amount, purchase_order.company_id,
+                    purchase_order.coupon_id
+                    FROM purchase_order
+                    WHERE purchase_order.company_id = ${company_id} AND
+                    purchase_order.deleted_at IS NULL
+                `
+            }
+
+            MySqlConnection.getInstance()
+                .fetch(sqlText)
+                .then(data => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res) : reject(null)
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+
+        })
     }
 
     public async getOrderDetail(
