@@ -87,7 +87,7 @@ export class OrderService {
         try {
             let sqlText = `
                 SELECT purchase_order.order_id, purchase_order.status, purchase_order.amount,
-                purchase_order.company_id, purchase_order.coupon_id,
+                purchase_order.company_id, purchase_order.coupon_id, purchase_order.shipment_status
                 discount_coupon.coupon_code, discount_coupon.percentage,
                 users.user_id, users.firstname, users.lastname, users.email, users.phone, users.document,
                 address.address_id, address.address,
