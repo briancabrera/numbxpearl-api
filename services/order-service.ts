@@ -87,21 +87,18 @@ export class OrderService {
         try {
             let sqlText = `
                 SELECT purchase_order.order_id, purchase_order.status, purchase_order.amount,
-                purchase_order.company_id, purchase_order.coupon_id, purchase_order.shipment_status
-                discount_coupon.coupon_code, discount_coupon.percentage,
-                users.user_id, users.firstname, users.lastname, users.email, users.phone, users.document,
+                purchase_order.company_id, purchase_order.coupon_id, purchase_order.shipment_status,
+                users.user_id, users.firstname, users.lastname, users.email, users.phone, users.document, 
                 address.address_id, address.address,
                 country.country_name,
                 department.department_name
                 FROM purchase_order, users, address, country, department
                 WHERE purchase_order.order_id = ${order_id} AND
-                discount_coupon.coupon_id = purchase_order.coupon_id AND
                 users.user_id = purchase_order.order_id AND
-                address.address_id = purchase_order.address_id AND
+                address.user_id = users.user_id AND
                 country.country_id = address.country_id AND
                 department.department_id = address.department_id AND
                 purchase_order.deleted_at IS NULL AND
-                discount_coupon.deleted_at IS NULL AND
                 users.deleted_at IS NULL AND
                 address.deleted_at IS NULL;
             `;
@@ -132,7 +129,7 @@ export class OrderService {
                 FROM order_products, product_variant, product
                 WHERE order_products.order_id = ${order_id} AND
                 product_variant.variant_id = order_products.variant_id AND
-                product.product_id = product_variant.product_id
+                product.product_id = product_variant.product_id AND
                 product_variant.deleted_at IS NULL AND
                 product.deleted_at IS NULL
             `
