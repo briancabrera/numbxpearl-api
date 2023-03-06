@@ -4,10 +4,10 @@ import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { CollectionService } from '../services/collection-service';
 import { CompanyService } from '../services/company-service';
 import { CouponService } from '../services/coupon-service';
+import { OrderService } from '../services/order-service';
 import { ProductService } from '../services/product-service';
-import { getCompanyCollectionsSchema } from '../validators/collection';
-import { getCompanyDiscountCouponsSchema } from '../validators/discount_coupon/get-company-coupons';
-import { getCompanyProductsSchema } from '../validators/product';
+import { companyIdValidator } from '../validators/company.ts/company-id';
+import { getOrdersSchema } from '../validators/order';
 
 const companyApi = express.Router();
 
@@ -23,7 +23,7 @@ companyApi.delete("/:id", superadminMiddleware, (req, res) => res.status(503).se
 
 companyApi.get('/:company_id/products', superadminMiddleware, async (req, res) => {
     try {
-        const {error, value} = await getCompanyProductsSchema.validateAsync(req.params)
+        const {error, value} = await companyIdValidator.validateAsync(req.params)
         const service = new ProductService();
         
         if (!error) {
@@ -44,7 +44,7 @@ companyApi.get('/:company_id/products', superadminMiddleware, async (req, res) =
 
 companyApi.get('/:company_id/collections', async (req, res) => {
     try {
-        const {error, value} = await getCompanyCollectionsSchema.validateAsync(req.params)
+        const {error, value} = await companyIdValidator.validateAsync(req.params)
         const service = new CollectionService();
         
         if (!error) {
@@ -65,7 +65,7 @@ companyApi.get('/:company_id/collections', async (req, res) => {
 
 companyApi.get('/:company_id/coupons', superadminMiddleware, async (req, res) => {
     try {
-        const {error, value} = await getCompanyDiscountCouponsSchema.validateAsync(req.params)
+        const {error, value} = await companyIdValidator.validateAsync(req.params)
         const service = new CouponService();
         
         if (!error) {
@@ -81,6 +81,28 @@ companyApi.get('/:company_id/coupons', superadminMiddleware, async (req, res) =>
         }
     } catch(err) {
         return makeResponse(res, 500, null, false, ['Internal server error'])
+    }
+})
+
+companyApi.get('/:company_id/orders', superadminMiddleware, async (req, res) => {   
+    try {
+        let {error, value} = await getOrdersSchema.validateAsync({...req.params, ...req.query})
+        const service = new OrderService();
+
+        if (!error) {
+            const { company_id } = req.params
+            const { status } = req.query
+            const orders = await service.getOrders(company_id, status)
+            if (orders) {
+                return makeResponse(res, 200, orders, true, null)
+            } else {
+                return makeResponse(res, 404, null, false, ['No orders were found for the selected company'])
+            }
+        } else {
+            return makeResponse(res, 400, null, false, ['Bad request'])
+        }
+    } catch (err) {
+        return makeResponse(res, 500, err, false, ['Internal server error'])
     }
 })
 
