@@ -93,11 +93,11 @@ export class OrderService {
                 address.address_id, address.address,
                 country.country_name,
                 department.department_name
-                FROM purchase_order, users, address, country, department, order_products, product_variant, product
+                FROM purchase_order, users, address, country, department
                 WHERE purchase_order.order_id = ${order_id} AND
                 discount_coupon.coupon_id = purchase_order.coupon_id AND
                 users.user_id = purchase_order.order_id AND
-                address.user_id = users.user_id AND
+                address.address_id = purchase_order.address_id AND
                 country.country_id = address.country_id AND
                 department.department_id = address.department_id AND
                 purchase_order.deleted_at IS NULL AND
@@ -215,8 +215,8 @@ export class OrderService {
 
             if (preference) {
                 let sqlText = `
-                    INSERT INTO purchase_order(status, mp_reference, amount, user_id, address_id, company_id, coupon_id)
-                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${payer.address.address_id}, ${company_id}, ${coupon_id})
+                    INSERT INTO purchase_order(status, mp_reference, amount, shipment_status, user_id, address_id, company_id, coupon_id)
+                    VALUES ("created", "${preference.body.external_reference}", ${amount}, 'pending', ${payer.user_id}, ${payer.address.address_id}, ${company_id}, ${coupon_id})
                 `
                 let orderCreated = await MySqlConnection
                     .getInstance()
