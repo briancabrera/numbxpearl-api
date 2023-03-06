@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     payment_id VARCHAR(64) DEFAULT NULL,
     amount INT NOT NULL,
     user_id INT NOT NULL,
+    address_id INT NOT NULL,
     company_id INT NOT NULL,
     coupon_id INT DEFAULT NULL,
     created_at DATETIME DEFAULT NOW(),
@@ -108,7 +109,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(128) NOT NULL,
     phone VARCHAR(9) NOT NULL,
     password VARCHAR(64) DEFAULT NULL,
-    document VARCHAR(8) NOT NULL,
+    document VARCHAR(8) NOT NULL UNIQUE,
     created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME DEFAULT NULL,
     deleted_at DATETIME DEFAULT NULL
