@@ -55,12 +55,63 @@ export class UserService {
     }
 
     // TODO !!
-    public updateUser(req, res) {
-        return 1
+    public async updateUser(
+        user_id: number,
+        firstname: string,
+        lastname: string,
+        email: string,
+        phone: string
+    ) {
+        return new Promise ((resolve, reject) => {
+            let sqlText = `
+                UPDATE users
+                SET users.firstname = '${firstname}',
+                users.lastname = '${lastname}',
+                users.email = '${email}',
+                users.phone = '${phone}',
+                users.updated_at = NOW()
+                WHERE users.user_id = ${user_id} AND
+                users.deleted_at IS NULL
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .runQuery(sqlText)
+                .then((success) => {
+                    if (success) {
+                        resolve(true);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    reject(error);
+                })
+        })
     }
 
-    public deleteUser(req, res) {
-        return 1
+    public async deleteUser(
+        user_id: number
+    ) {
+        return new Promise ((resolve, reject) => {
+            let sqlText = `
+                UPDATE users
+                SET users.deleted_at = NOW()
+                WHERE users.user_id = ${user_id} AND
+                users.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .runQuery(sqlText)
+                .then((success) => {
+                    if (success) {
+                        resolve(true);
+                    }
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
     }
 
     public async getUserRole(user_id: number) {
