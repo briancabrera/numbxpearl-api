@@ -9,7 +9,7 @@ export class UserService {
     public async getUsers() {
         return new Promise ((resolve, reject) => {
             const sqlText = `
-                SELECT *
+                SELECT users.user_id, users.user_type_id, users.firstname, users.lastname, users.email, users.phone, users.document
                 FROM users
                 WHERE users.deleted_at IS NULL;
             `;
