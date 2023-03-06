@@ -3,7 +3,7 @@ import { makeResponse } from '../helpers/responseHelper';
 import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { CollectionService } from '../services/collection-service';
 import { ProductService } from '../services/product-service';
-import { deleteCollectionSchema, getCollectionSchema, getCompanyCollectionsSchema, newCollectionSchema, updateCollectionSchema } from '../validators/collection';
+import { deleteCollectionSchema, getCollectionSchema, newCollectionSchema, updateCollectionSchema } from '../validators/collection';
 import { getCollectionProductsSchema } from '../validators/product';
 
 const collectionApi = express.Router();
