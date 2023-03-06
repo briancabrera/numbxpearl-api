@@ -15,8 +15,81 @@ export class OrderService {
         this.mpService = new MpService();
     }
 
-    public getOrders(req, res) {
-        return 1
+    public async getOrders(
+        company_id: number,
+        status: string
+    ) {
+        
+    }
+
+    public async getOrderDetail(
+        order_id: number
+    ) {
+        try {
+            let sqlText = `
+                SELECT purchase_order.order_id, purchase_order.status, purchase_order.amount,
+                purchase_order.company_id, purchase_order.coupon_id,
+                discount_coupon.coupon_code, discount_coupon.percentage,
+                users.user_id, users.firstname, users.lastname, users.email, users.phone, users.document,
+                address.address_id, address.address,
+                country.country_name,
+                department.department_name
+                FROM purchase_order, users, address, country, department, order_products, product_variant, product
+                WHERE purchase_order.order_id = ${order_id} AND
+                discount_coupon.coupon_id = purchase_order.coupon_id AND
+                users.user_id = purchase_order.order_id AND
+                address.user_id = users.user_id AND
+                country.country_id = address.country_id AND
+                department.department_id = address.department_id AND
+                purchase_order.deleted_at IS NULL AND
+                discount_coupon.deleted_at IS NULL AND
+                users.deleted_at IS NULL AND
+                address.deleted_at IS NULL;
+            `;
+
+            const order = await MySqlConnection.getInstance()
+                    .fetch(sqlText)
+                    .then(data => JSON.parse(JSON.stringify(data))[0])
+            
+            order.products = await this.getOrderProducts(order_id)
+
+            return order
+
+        } catch (err) {
+            console.log(err)
+            return false
+        }
+
+    }
+
+    private async getOrderProducts(
+        order_id: number
+    ) {
+        return new Promise((resolve, reject) => {
+            let sqlText = `
+                SELECT order_products.variant_id,
+                product_variant.size, product_variant.color,
+                product.product_id, product.name, product.price
+                FROM order_products, product_variant, product
+                WHERE order_products.order_id = ${order_id} AND
+                product_variant.variant_id = order_products.variant_id AND
+                product.product_id = product_variant.product_id
+                product_variant.deleted_at IS NULL AND
+                product.deleted_at IS NULL
+            `
+
+            MySqlConnection.getInstance()
+                .fetch(sqlText)
+                .then(data => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res) : reject(null)
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+
+        })
     }
 
     private async getOrderByMpReference(
@@ -83,8 +156,8 @@ export class OrderService {
 
             if (preference) {
                 let sqlText = `
-                    INSERT INTO purchase_order(status, mp_reference, amount, user_id, company_id, coupon_id)
-                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${company_id}, ${coupon_id})
+                    INSERT INTO purchase_order(status, mp_reference, amount, user_id, address_id, company_id, coupon_id)
+                    VALUES ("created", "${preference.body.external_reference}", ${amount}, ${payer.user_id}, ${payer.address.address_id}, ${company_id}, ${coupon_id})
                 `
                 let orderCreated = await MySqlConnection
                     .getInstance()
@@ -125,7 +198,8 @@ export class OrderService {
                 let sqlText = `
                     UPDATE purchase_order
                     SET purchase_order.status = "${paymentData['status']}",
-                    purchase_order.payment_id = "${payment_id}"
+                    purchase_order.payment_id = "${payment_id}",
+                    purchase_order.updated_at = NOW()
                     WHERE purchase_order.mp_reference = "${paymentData['external_reference']}"
                 `
 
