@@ -64,12 +64,18 @@ productApi.post("/:product_id/variants", superadminMiddleware, async (req, res) 
                 colors,
                 sizes } = req.body
             let { product_id } = req.params
-            const success = await service.createProductVariants(product_id, colors, sizes)
-            if (success) {
-                return makeResponse(res, 201, null, true, null)
+            const product = await service.getProduct(product_id)
+            if (product) {
+                const success = await service.createProductVariants(product_id, colors, sizes)
+                if (success) {
+                    return makeResponse(res, 201, null, true, null)
+                } else {
+                    return makeResponse(res, 400, null, false, ['Bad request'])
+                }
             } else {
-                return makeResponse(res, 400, null, false, ['Bad request'])
+                makeResponse(res, 404, null, false, ['Product not found with id ' + product_id])
             }
+            
         }
     } catch (err) {
         console.log(err)
