@@ -1,6 +1,5 @@
 import express from 'express';
 
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { AuthService } from '../services/auth-service';
 
 import { makeResponse } from '../helpers/responseHelper';
