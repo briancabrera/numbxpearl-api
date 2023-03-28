@@ -181,6 +181,28 @@ export class UserService {
         })
     }
 
+    public async getUserByEmail(email: string) {
+        return new Promise ((resolve, reject) => {
+            const sqlText = `
+                SELECT user_id, firstname, lastname, email, phone, document, password
+                FROM users
+                WHERE users.email = '${email}' AND
+                users.deleted_at IS NULL;
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .fetch(sqlText)
+                .then((data) => {
+                    let res = JSON.parse(JSON.stringify(data))
+                    res && res.length ? resolve(res[0]) : resolve(null);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
     public async getUserAddresses(
         user_id: number
     ) {
