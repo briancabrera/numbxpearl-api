@@ -3,17 +3,17 @@ import express from 'express';
 import { CouponService } from '../services/coupon-service';
 
 import { adminMiddleware } from '../middlewares/adminMiddleware';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
 import { getDiscountCouponByCodeSchema } from '../validators/discount_coupon/get-coupon';
 import { makeResponse } from '../helpers/responseHelper';
 import { newCouponSchema } from '../validators/new-coupon';
 import { updateDiscountCouponSchema } from '../validators/discount_coupon/update-coupon';
 import { deleteDiscountCouponSchema } from '../validators/discount_coupon/delete-coupon';
+import { verifyToken } from '../middlewares/verifyToken';
 
 const couponApi = express.Router();
 const service = new CouponService();
 
-couponApi.get('/:coupon_code', superadminMiddleware, async (req, res) => {   
+couponApi.get('/:coupon_code', verifyToken, async (req, res) => {   
     try {
         const {error, value} = await getDiscountCouponByCodeSchema.validateAsync(req.params)
 
@@ -33,7 +33,7 @@ couponApi.get('/:coupon_code', superadminMiddleware, async (req, res) => {
     }
 })
 
-couponApi.post("/", superadminMiddleware, async (req, res) => {   
+couponApi.post("/", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await newCouponSchema.validateAsync(req.body)
         if (!error) {
@@ -55,7 +55,7 @@ couponApi.post("/", superadminMiddleware, async (req, res) => {
     }
 })
 
-couponApi.put("/:coupon_id", superadminMiddleware, async (req, res) => {   
+couponApi.put("/:coupon_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await updateDiscountCouponSchema.validateAsync({...req.body, ...req.params})
         if (!error) {
@@ -64,10 +64,10 @@ couponApi.put("/:coupon_id", superadminMiddleware, async (req, res) => {
                 percentage,
                 is_active } = req.body
             let { coupon_id } = req.params
-            const coupon = await service.getDiscountCouponById(coupon_id);
+            const coupon = await service.getDiscountCouponById(Number(coupon_id));
             console.log(coupon)
             if (coupon) {
-                const success = await service.updateDiscountProduct(coupon_id, coupon_code.trim(), percentage, is_active)
+                const success = await service.updateDiscountProduct(Number(coupon_id), coupon_code.trim(), percentage, is_active)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {
@@ -85,15 +85,15 @@ couponApi.put("/:coupon_id", superadminMiddleware, async (req, res) => {
     }
 })
 
-couponApi.delete("/:coupon_id", superadminMiddleware, async (req, res) => {   
+couponApi.delete("/:coupon_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await deleteDiscountCouponSchema.validateAsync(req.params)
     
         if (!error) {
             let { coupon_id } = req.params
-            const coupon = await service.getDiscountCouponById(coupon_id)
+            const coupon = await service.getDiscountCouponById(Number(coupon_id))
             if (coupon) {
-                const success = await service.deleteDiscountCoupon(coupon_id)
+                const success = await service.deleteDiscountCoupon(Number(coupon_id))
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

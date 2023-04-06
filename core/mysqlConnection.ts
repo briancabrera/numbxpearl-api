@@ -10,6 +10,7 @@ class MySqlConnection {
         this.pool = mysql.createPool({
             host: mySqlConfig.HOST,
             user: mySqlConfig.USER,
+            port: mySqlConfig.PORT,
             password: mySqlConfig.PASSWORD,
             database: mySqlConfig.DATABASE,
             connectionLimit: 100,

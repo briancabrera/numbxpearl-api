@@ -1,19 +1,19 @@
 import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
+import { verifyToken } from '../middlewares/verifyToken';
 import { OrderService } from '../services/order-service';
 import { orderIdValidator, newOrderSchema, updateShipmentStatusSchema } from '../validators/order';
 
 const orderApi = express.Router();
 const service = new OrderService();
 
-orderApi.get('/:order_id', superadminMiddleware, async (req, res) => {   
+orderApi.get('/:order_id', verifyToken, async (req, res) => {   
     try {
         const {error, value} = await orderIdValidator.validateAsync(req.params)
 
         if (!error) {
             const { order_id } = req.params
-            const order = await service.getOrderDetail(order_id)
+            const order = await service.getOrderDetail(Number(order_id))
             if (order) {
                 return makeResponse(res, 200, order, true, null)
             } else {
@@ -63,15 +63,15 @@ orderApi.post("/mercadopago", async (req, res) => {
     res.status(status).send()
 })
 
-orderApi.put('/:order_id', superadminMiddleware, async (req, res) => {   
+orderApi.put('/:order_id', verifyToken, async (req, res) => {   
     try {
         const {error, value} = await updateShipmentStatusSchema.validateAsync({...req.body, ...req.params})
         if (!error) {
             let { shipment_status } = req.body
             let { order_id } = req.params
-            const order = await service.getOrder(order_id);
+            const order = await service.getOrder(Number(order_id));
             if (order) {
-                const success = await service.updateOrderShipmentStatus(order_id, shipment_status)
+                const success = await service.updateOrderShipmentStatus(Number(order_id), shipment_status)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {
@@ -88,15 +88,15 @@ orderApi.put('/:order_id', superadminMiddleware, async (req, res) => {
     }
 })
 
-orderApi.delete("/:order_id", superadminMiddleware, async (req, res) => {   
+orderApi.delete("/:order_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await orderIdValidator.validateAsync(req.params)
     
         if (!error) {
             let { order_id } = req.params
-            const order = await service.getOrder(order_id)
+            const order = await service.getOrder(Number(order_id))
             if (order) {
-                const success = await service.deleteOrder(order_id)
+                const success = await service.deleteOrder(Number(order_id))
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

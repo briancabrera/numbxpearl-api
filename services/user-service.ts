@@ -28,6 +28,34 @@ export class UserService {
         })
     }
 
+    public async createAdmin(
+        user_type_id: number,
+        firstname: string,
+        lastname: string,
+        email: string,
+        phone: string,
+        password: string,
+        document: string) {
+        return new Promise ((resolve, reject) => {
+            let sqlText = `
+                INSERT INTO users(user_type_id, firstname, lastname, email, phone, password, document)
+                VALUES (${user_type_id}, "${firstname}", "${lastname}", "${email}", "${phone}", "${password}", "${document}");
+            `;
+
+            MySqlConnection
+                .getInstance()
+                .runQuery(sqlText)
+                .then((success) => {
+                    if (success) {
+                        resolve(true);
+                    }
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
     public async createUser(
         firstname: string,
         lastname: string,

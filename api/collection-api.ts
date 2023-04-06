@@ -1,6 +1,6 @@
 import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
+import { verifyToken } from '../middlewares/verifyToken';
 import { CollectionService } from '../services/collection-service';
 import { ProductService } from '../services/product-service';
 import { deleteCollectionSchema, getCollectionSchema, newCollectionSchema, updateCollectionSchema } from '../validators/collection';
@@ -17,9 +17,9 @@ collectionApi.get('/:collection_id/products', async (req, res) => {
 
         if (!error) {
             const { collection_id } = req.params
-            const collection = await service.getCollection(collection_id)
+            const collection = await service.getCollection(Number(collection_id))
             if (collection) {
-                const products = await productService.getCollectionProducts(collection_id)
+                const products = await productService.getCollectionProducts(Number(collection_id))
                 if (products) {
                     return makeResponse(res, 200, products, true, null)
                 } else {
@@ -42,7 +42,7 @@ collectionApi.get('/:collection_id', async (req, res) => {
 
         if (!error) {
             const { collection_id } = req.params
-            const collection = await service.getCollection(collection_id)
+            const collection = await service.getCollection(Number(collection_id))
             if (collection) {
                 return makeResponse(res, 200, collection, true, null)
             } else {
@@ -56,7 +56,7 @@ collectionApi.get('/:collection_id', async (req, res) => {
     }
 })
 
-collectionApi.post("/", superadminMiddleware, async (req, res) => {   
+collectionApi.post("/", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await newCollectionSchema.validateAsync(req.body)
     
@@ -74,15 +74,15 @@ collectionApi.post("/", superadminMiddleware, async (req, res) => {
     }
 })
 
-collectionApi.put("/:collection_id", superadminMiddleware, async (req, res) => {   
+collectionApi.put("/:collection_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await updateCollectionSchema.validateAsync({...req.body, ...req.params})
         if (!error) {
             let { collection_name, available } = req.body
             let { collection_id } = req.params
-            const collection = await service.getCollection(collection_id);
+            const collection = await service.getCollection(Number(collection_id));
             if (collection) {
-                const success = await service.updateCollection(collection_id, collection_name.trim(), available)
+                const success = await service.updateCollection(Number(collection_id), collection_name.trim(), available)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {
@@ -99,15 +99,15 @@ collectionApi.put("/:collection_id", superadminMiddleware, async (req, res) => {
     }
 })
 
-collectionApi.delete("/:collection_id", superadminMiddleware, async (req, res) => {   
+collectionApi.delete("/:collection_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await deleteCollectionSchema.validateAsync(req.params)
     
         if (!error) {
             let { collection_id } = req.params
-            const collection = await service.getCollection(collection_id)
+            const collection = await service.getCollection(Number(collection_id))
             if (collection) {
-                const success = await service.deleteCollection(collection_id)
+                const success = await service.deleteCollection(Number(collection_id))
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

@@ -215,4 +215,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Docker
+
+docker/numbxpearl-db/data
+
 # End of https://www.toptal.com/developers/gitignore/api/node,windows,macos,linux

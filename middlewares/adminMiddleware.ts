@@ -9,7 +9,7 @@ export async function adminMiddleware(request: express.Request, response: expres
     const { user_id } = request.headers;
 
     const service = new UserService();
-    const userRole = await service.getUserRole(user_id);
+    const userRole = await service.getUserRole(Number(user_id));
 
     if(userRole && (userRole['user_type_name'] === Roles.ADMINISTRATOR || userRole['user_type_name'] === Roles.SUPERADMIN)){
         next();

@@ -1,13 +1,14 @@
 import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
+
+import { verifyToken } from '../middlewares/verifyToken';
 import { CategoryService } from '../services/category-service';
 import { getCategorySchema, newCategorySchema, updateCategorySchema } from '../validators/category';
 
 const categoryApi = express.Router();
 const service = new CategoryService();
 
-categoryApi.get('/', superadminMiddleware, async (req, res) => {
+categoryApi.get('/', async (req, res) => {
     try {
         const categories = await service.getCategories();
         if (categories) {
@@ -20,13 +21,13 @@ categoryApi.get('/', superadminMiddleware, async (req, res) => {
     }
 })
 
-categoryApi.get('/:category_id', superadminMiddleware, async (req, res) => {   
+categoryApi.get('/:category_id', verifyToken, async (req, res) => {   
     try {
         const {error, value} = await getCategorySchema.validateAsync(req.params)
 
         if (!error) {
             const { category_id } = req.params
-            const category = await service.getCategoryById(category_id)
+            const category = await service.getCategoryById(Number(category_id))
             if (category) {
                 return makeResponse(res, 200, category, true, null)
             } else {
@@ -40,7 +41,7 @@ categoryApi.get('/:category_id', superadminMiddleware, async (req, res) => {
     }
 })
 
-categoryApi.post("/", superadminMiddleware, async (req, res) => {   
+categoryApi.post("/", verifyToken, async (req, res) => {   
     try {
         console.log(req.body)
         const {error, value} = await newCategorySchema.validateAsync(req.body)
@@ -66,14 +67,14 @@ categoryApi.post("/", superadminMiddleware, async (req, res) => {
     }
 })
 
-categoryApi.put("/:category_id", superadminMiddleware, async (req, res) => {   
+categoryApi.put("/:category_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await updateCategorySchema.validateAsync({ ...req.params, ...req.body})
     
         if (!error) {
                 const { category_id } = req.params 
                 let { category_name } = req.body 
-                const success = await service.updateCategory(category_id, category_name.trim())
+                const success = await service.updateCategory(Number(category_id), category_name.trim())
                 if (success) {
                     return makeResponse(res, 201, null, true, null)
                 } else {
@@ -87,13 +88,13 @@ categoryApi.put("/:category_id", superadminMiddleware, async (req, res) => {
     }
 })
 
-categoryApi.delete("/:category_id", superadminMiddleware, async (req, res) => {   
+categoryApi.delete("/:category_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await getCategorySchema.validateAsync(req.params)
     
         if (!error) {
                 const { category_id } = req.params 
-                const success = await service.deleteCategory(category_id)
+                const success = await service.deleteCategory(Number(category_id))
                 if (success) {
                     return makeResponse(res, 201, null, true, null)
                 } else {

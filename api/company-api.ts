@@ -1,6 +1,7 @@
 import express from 'express';
 import { makeResponse } from '../helpers/responseHelper';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
+import { verifyToken } from '../middlewares/verifyToken';
+verifyToken
 import { CollectionService } from '../services/collection-service';
 import { CompanyService } from '../services/company-service';
 import { CouponService } from '../services/coupon-service';
@@ -15,20 +16,20 @@ companyApi.get('/', (req, res) => res.status(503).send())
 
 companyApi.get('/:id', (req, res) => res.status(503).send())
 
-companyApi.post("/", superadminMiddleware, (req, res) => res.status(503).send())
+companyApi.post("/", verifyToken, (req, res) => res.status(503).send())
 
-companyApi.put("/:id", superadminMiddleware, (req, res) => res.status(503).send())
+companyApi.put("/:id", verifyToken, (req, res) => res.status(503).send())
 
-companyApi.delete("/:id", superadminMiddleware, (req, res) => res.status(503).send())
+companyApi.delete("/:id", verifyToken, (req, res) => res.status(503).send())
 
-companyApi.get('/:company_id/products', superadminMiddleware, async (req, res) => {
+companyApi.get('/:company_id/products', verifyToken, async (req, res) => {
     try {
         const {error, value} = await companyIdValidator.validateAsync(req.params)
         const service = new ProductService();
         
         if (!error) {
             const { company_id } = req.params
-            const products = await service.getCompanyProducts(company_id)
+            const products = await service.getCompanyProducts(Number(company_id))
             if (products) {
                 return makeResponse(res, 200, products, true, null)
             } else {
@@ -49,7 +50,7 @@ companyApi.get('/:company_id/collections', async (req, res) => {
         
         if (!error) {
             const { company_id } = req.params
-            const collections = await service.getCompanyCollections(company_id)
+            const collections = await service.getCompanyCollections(Number(company_id))
             if (collections) {
                 return makeResponse(res, 200, collections, true, null)
             } else {
@@ -63,14 +64,14 @@ companyApi.get('/:company_id/collections', async (req, res) => {
     }
 })
 
-companyApi.get('/:company_id/coupons', superadminMiddleware, async (req, res) => {
+companyApi.get('/:company_id/coupons', verifyToken, async (req, res) => {
     try {
         const {error, value} = await companyIdValidator.validateAsync(req.params)
         const service = new CouponService();
         
         if (!error) {
             const { company_id } = req.params
-            const coupons = await service.getCompanyDiscountCoupons(company_id)
+            const coupons = await service.getCompanyDiscountCoupons(Number(company_id))
             if (coupons) {
                 return makeResponse(res, 200, coupons, true, null)
             } else {
@@ -84,7 +85,7 @@ companyApi.get('/:company_id/coupons', superadminMiddleware, async (req, res) =>
     }
 })
 
-companyApi.get('/:company_id/orders', superadminMiddleware, async (req, res) => {   
+companyApi.get('/:company_id/orders', verifyToken, async (req, res) => {   
     try {
         let {error, value} = await getOrdersSchema.validateAsync({...req.params, ...req.query})
         const service = new OrderService();
@@ -92,7 +93,7 @@ companyApi.get('/:company_id/orders', superadminMiddleware, async (req, res) => 
         if (!error) {
             const { company_id } = req.params
             const { status } = req.query
-            const orders = await service.getOrders(company_id, status)
+            const orders = await service.getOrders(Number(company_id), String(status))
             if (orders) {
                 return makeResponse(res, 200, orders, true, null)
             } else {

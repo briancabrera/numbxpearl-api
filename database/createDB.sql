@@ -73,7 +73,6 @@ CREATE TABLE IF NOT EXISTS purchase_order (
     shipment_status VARCHAR(7) NOT NULL,
     user_id INT NOT NULL,
     address_id INT NOT NULL,
-    company_id INT NOT NULL,
     coupon_id INT DEFAULT NULL,
     created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME DEFAULT NULL,

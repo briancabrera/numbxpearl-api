@@ -2,7 +2,7 @@ import express from 'express';
 import asyncMiddleware from 'middleware-async';
 import { makeResponse } from '../helpers/responseHelper';
 import { adminMiddleware } from '../middlewares/adminMiddleware';
-import { superadminMiddleware } from '../middlewares/superadminMiddleware';
+import { verifyToken } from '../middlewares/verifyToken';
 import { ProductService } from '../services/product-service';
 import { deleteProductSchema, getProductSchema, newProductSchema, updateProductSchema, newProductVariantsSchema } from '../validators/product';
 
@@ -16,7 +16,7 @@ productApi.get('/:product_id', async (req, res) => {
 
         if (!error) {
             const { product_id } = req.params
-            const product = await service.getProduct(product_id)
+            const product = await service.getProduct(Number(product_id))
             if (product) {
                 return makeResponse(res, 200, product, true, null)
             } else {
@@ -30,7 +30,7 @@ productApi.get('/:product_id', async (req, res) => {
     }
 })
 
-productApi.post("/", superadminMiddleware, async (req, res) => {   
+productApi.post("/", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await newProductSchema.validateAsync(req.body)
     
@@ -55,7 +55,7 @@ productApi.post("/", superadminMiddleware, async (req, res) => {
     }
 })
 
-productApi.post("/:product_id/variants", superadminMiddleware, async (req, res) => {   
+productApi.post("/:product_id/variants", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await newProductVariantsSchema.validateAsync({...req.body, ...req.params})
     
@@ -64,9 +64,9 @@ productApi.post("/:product_id/variants", superadminMiddleware, async (req, res) 
                 colors,
                 sizes } = req.body
             let { product_id } = req.params
-            const product = await service.getProduct(product_id)
+            const product = await service.getProduct(Number(product_id))
             if (product) {
-                const success = await service.createProductVariants(product_id, colors, sizes)
+                const success = await service.createProductVariants(Number(product_id), colors, sizes)
                 if (success) {
                     return makeResponse(res, 201, null, true, null)
                 } else {
@@ -83,7 +83,7 @@ productApi.post("/:product_id/variants", superadminMiddleware, async (req, res) 
     }
 })
 
-productApi.put("/:product_id", superadminMiddleware, async (req, res) => {   
+productApi.put("/:product_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await updateProductSchema.validateAsync({...req.body, ...req.params})
         if (!error) {
@@ -96,9 +96,9 @@ productApi.put("/:product_id", superadminMiddleware, async (req, res) => {
                 collection_id,
                 category_id } = req.body
             let { product_id } = req.params
-            const product = await service.getProduct(product_id);
+            const product = await service.getProduct(Number(product_id));
             if (product) {
-                const success = await service.updateProduct(product_id, name.trim(), price, description.trim(), available, company_id, collection_id, category_id)
+                const success = await service.updateProduct(Number(product_id), name.trim(), price, description.trim(), available, company_id, collection_id, category_id)
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {
@@ -115,15 +115,15 @@ productApi.put("/:product_id", superadminMiddleware, async (req, res) => {
     }
 })
 
-productApi.delete("/:product_id", superadminMiddleware, async (req, res) => {   
+productApi.delete("/:product_id", verifyToken, async (req, res) => {   
     try {
         const {error, value} = await deleteProductSchema.validateAsync(req.params)
     
         if (!error) {
             let { product_id } = req.params
-            const product = await service.getProduct(product_id)
+            const product = await service.getProduct(Number(product_id))
             if (product) {
-                const success = await service.deleteProduct(product_id)
+                const success = await service.deleteProduct(Number(product_id))
                 if (success) {
                     return makeResponse(res, 200, null, true, null)
                 } else {

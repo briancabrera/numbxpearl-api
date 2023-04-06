@@ -11,6 +11,9 @@ import couponApi from './api/discount-coupon-api';
 import orderApi from './api/order-api';
 import productApi from './api/product-api';
 import userApi from './api/user-api';
+import authApi from './api/auth-api';
+
+import bcrypt from 'bcryptjs'
 
 const app = express();
 
@@ -20,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const PORT: number = 3009;
 
+app.use('/auth', authApi)
 app.use('/category', categoryApi)
 app.use('/collection', collectionApi)
 app.use('/company', companyApi)
